@@ -1,13 +1,23 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
+import Timer from './Components/Timer';
+import Gacha from './Components/Gacha';
+
+const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Drawer.Navigator initialRouteName="Timer">
+        <Drawer.Screen name="Timer" component={Timer} />
+        <Drawer.Screen name="Gacha" component={Gacha} />
+      </Drawer.Navigator>
+    </NavigationContainer>
   );
 }
 
