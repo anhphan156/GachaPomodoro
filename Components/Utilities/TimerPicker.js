@@ -1,10 +1,9 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
+import Animated, { min } from 'react-native-reanimated';
 import { useState } from 'react/cjs/react.development';
-
-import BackgroundTimer from 'react-native-background-timer';
 
 import { pad } from './misc';
 
@@ -25,6 +24,30 @@ const TimePicker = props => {
     const [showPicker, setShowPicker] = useState(true);
     const [minute, setMinute] = useState(10);
     const [second, setSecond] = useState(0);
+    const [time, setTime] = useState(0);
+
+    const [start, setStart] = useState();
+
+    useEffect(() => {
+        if (!start) return;
+        
+        setTimeout(() => {
+            setTime(minute * 60 + second - 1);
+            console.log(`time: ${time} -- second: ${second} -- minute: ${minute}`);
+
+            // if(time === 0){
+            //     clearInterval(this);
+            // }
+
+            if(second === 0){
+                setSecond(59);
+                setMinute(minute - 1);
+            }else{
+                setSecond(second - 1)
+            }
+        }, 1000);
+
+    }, [start, second]);
     
     return (
         showPicker? 
@@ -52,15 +75,8 @@ const TimePicker = props => {
             </View>
             :
             <View style={{marginTop: 5}}>
-                <Text style={{width: 0.2 * width, textAlign: 'center', fontSize: 30}} onPress={() => setShowPicker(!showPicker)}>{minute}:{pad(second)}</Text>
-                <Button title="Start" onPress={() => {
-                    BackgroundTimer.runBackgroundTimer(() => {
-                        setSecond(second - 1);
-                        if(second === 0){
-                            // BackgroundTimer.stopBackgroundTimer();
-                        }
-                    }, 1000);
-                }} />
+                <Text style={{width: 0.2 * width, textAlign: 'center', fontSize: 30}} onPress={() => setShowPicker(!showPicker)}>{pad(minute)}:{pad(second)}</Text>
+                <Button title="Start" onPress={() => setStart(!start)} />
             </View>
     );
 };

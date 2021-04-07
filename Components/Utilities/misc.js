@@ -1,4 +1,4 @@
-const pad = x => x === 0? '00': x;
+const pad = x => x < 10? `0${x}`: x;
 
 export {
     pad
