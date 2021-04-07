@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Pressable, Modal } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Pressable, Modal, Button } from 'react-native';
+
 
 import Burger from './Utilities/Burger';
-import { PrimaryHeading } from './Texts/Heading';
 import { Prompt } from './Utilities/Prompt';
 import TimerPicker from './Utilities/TimerPicker';
 
@@ -18,7 +18,7 @@ const Timer = ({ navigation }) => {
             <View style={{flex:1}}>
                 <Burger navigation={navigation} />
             </View>
-            <View style={styles.taskName}>
+            <View style={[styles.taskName, {flex: 1}]}>
                 <Prompt placeholder="Pick a Task"/>
                 <Modal 
                     animationType='slide'
@@ -32,11 +32,15 @@ const Timer = ({ navigation }) => {
                     </View>
                 </Modal>
                 <Pressable style={[styles.roundedButton, {marginTop: 10}]} onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={styles.textGrey}>{category}</Text>
+                    <Text style={category === 'Category' ? {color: 'grey'} : {color: 'black'}}>{category}</Text>
                 </Pressable>
             </View>
-            <View style={[styles.centeredView, {flex: 5}]}>
-                <TimerPicker data={minutes} />
+            <View style={[styles.centeredView, {flex: 2}]}>
+                <Text>10 Experience Books</Text>
+                <Text>1 Box</Text>
+            </View>
+            <View style={[styles.centeredView, {flex: 3}]}>
+                <TimerPicker data={minutes}/>
             </View>
 
         </SafeAreaView>
@@ -51,7 +55,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     taskName: {
-        flex: 2,
         justifyContent: "flex-start",
         alignItems: 'center'
     },
@@ -60,9 +63,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 22
-    },
-    textGrey: {
-        color: 'grey'
     },
     roundedButton: {
         borderRadius: 20,

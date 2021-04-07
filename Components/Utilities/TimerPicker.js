@@ -1,8 +1,12 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useState } from 'react/cjs/react.development';
+
+import BackgroundTimer from 'react-native-background-timer';
+
+import { pad } from './misc';
 
 const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
@@ -18,8 +22,9 @@ const TimePicker = props => {
 
     const scrollY = React.useRef(new Animated.Value(0)).current;
     
-    const [minute, setMinute] = useState(10);
     const [showPicker, setShowPicker] = useState(true);
+    const [minute, setMinute] = useState(10);
+    const [second, setSecond] = useState(0);
     
     return (
         showPicker? 
@@ -46,9 +51,18 @@ const TimePicker = props => {
                 /> 
             </View>
             :
-            <View>
-                <Text style={{width: 0.2 * width, textAlign: 'center', fontSize: 30}} onPress={() => setShowPicker(!showPicker)}>{minute}:00</Text>
+            <View style={{marginTop: 5}}>
+                <Text style={{width: 0.2 * width, textAlign: 'center', fontSize: 30}} onPress={() => setShowPicker(!showPicker)}>{minute}:{pad(second)}</Text>
+                <Button title="Start" onPress={() => {
+                    BackgroundTimer.runBackgroundTimer(() => {
+                        setSecond(second - 1);
+                        if(second === 0){
+                            // BackgroundTimer.stopBackgroundTimer();
+                        }
+                    }, 1000);
+                }} />
             </View>
     );
 };
+
 export default TimePicker;
