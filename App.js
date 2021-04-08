@@ -7,17 +7,40 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import Timer from './Components/Timer';
 import Gacha from './Components/Gacha';
+import SignUp from './Components/SignUp';
+
+import { AuthProvider, useAuth } from './Contexts/AuthContext';
 
 const Drawer = createDrawerNavigator();
 
-export default function App() {
-  return (
+const Home = () => {
+
+  const { currentUser } = useAuth();
+
+  return currentUser ? (
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Timer">
         <Drawer.Screen name="Timer" component={Timer} />
         <Drawer.Screen name="Gacha" component={Gacha} />
       </Drawer.Navigator>
     </NavigationContainer>
+  ): 
+  (
+    <NavigationContainer>
+      <Drawer.Navigator initialRouteName="SignUp">
+        <Drawer.Screen name="Sign Up" component={SignUp} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+
+
+  return (
+    <AuthProvider>
+      <Home/>
+    </AuthProvider>
   );
 }
 

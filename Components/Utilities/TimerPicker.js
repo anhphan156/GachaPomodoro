@@ -31,13 +31,19 @@ const TimePicker = props => {
     useEffect(() => {
         if (!start) return;
         
+        if(time === 0){
+            setTime(0);
+            setMinute(10);
+            setSecond(0);
+            setStart(false);
+
+            return;
+        }
+
         setTimeout(() => {
             setTime(minute * 60 + second - 1);
             console.log(`time: ${time} -- second: ${second} -- minute: ${minute}`);
 
-            // if(time === 0){
-            //     clearInterval(this);
-            // }
 
             if(second === 0){
                 setSecond(59);
@@ -50,7 +56,7 @@ const TimePicker = props => {
     }, [start, second]);
     
     return (
-        showPicker? 
+        showPicker && !start? 
             <View style={[styles.container, {flexDirection: 'column' }]}>
                 <Text style={{textAlign: 'left', fontSize: 30}}>Pick a Time</Text>
                 <FlatList 
@@ -76,7 +82,7 @@ const TimePicker = props => {
             :
             <View style={{marginTop: 5}}>
                 <Text style={{width: 0.2 * width, textAlign: 'center', fontSize: 30}} onPress={() => setShowPicker(!showPicker)}>{pad(minute)}:{pad(second)}</Text>
-                <Button title="Start" onPress={() => setStart(!start)} />
+                <Button title="Start" onPress={() => {setTime(minute * 60 + second); setStart(!start);}} />
             </View>
     );
 };

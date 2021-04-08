@@ -10,8 +10,10 @@ const Timer = ({ navigation }) => {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [category, setCategory] = useState('Category');
+    const [taskName, setTaskName] = useState('');
 
-    const minutes = [...Array(121).keys()].slice(10);
+    // const minutes = [...Array(121).keys()].slice(10);
+    const minutes = [...Array(121).keys()];
 
     return (
         <SafeAreaView style={styles.container}>
@@ -19,7 +21,7 @@ const Timer = ({ navigation }) => {
                 <Burger navigation={navigation} />
             </View>
             <View style={[styles.taskName, {flex: 1}]}>
-                <Prompt placeholder="Pick a Task"/>
+                <Prompt placeholder="Pick a Task" onChangeText={x => setTaskName(x)} />
                 <Modal 
                     animationType='slide'
                     transparent={false}     
