@@ -5,27 +5,20 @@ import { useState } from 'react/cjs/react.development';
 import { Prompt, PasswordPrompt } from './Utilities/Prompt';
 import { useAuth } from '../Contexts/AuthContext';
 
-const SignUp = props => {
-    
+const SignIn = props => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
 
     const [error, setError] = useState('');
     
-    const { signup } = useAuth();
+    const { signin } = useAuth();
 
     const handleSubmit = async () => {
-        if(password !== confirmPassword){
-            setError('Passwords do not match');
-            return;
-        }
-
         try {
-            setError('');            
-            await signup(email,password);
+            setError(''); 
+            await signin(email,password);
         }catch {
-            setError('Failed to sign up');
+            setError('Failed to log in');
         }
     };
     
@@ -41,16 +34,13 @@ const SignUp = props => {
                 <PasswordPrompt onChangeText={setPassword} placeholder='Enter Password'/> 
             </View>
             <View style={{marginTop: 20}}>
-                <PasswordPrompt onChangeText={setConfirmPassword} placeholder='Confirm Password'/> 
-            </View>
-            <View style={{marginTop: 20}}>
                 <Button 
-                    title="Sign Up" 
+                    title="Sign In" 
                     onPress={handleSubmit} 
                 />
             </View>
             <View style={{marginTop: 20}}>
-                <Text onPress={() => props.navigation.navigate('Sign In')}>Or Login</Text>
+                <Text onPress={() => props.navigation.navigate('Sign Up')}>Or Sign Up?</Text>
             </View>
         </SafeAreaView>
     );
@@ -64,4 +54,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SignUp;
+export default SignIn;
