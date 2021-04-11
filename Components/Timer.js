@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Pressable, Modal, Button } from 'react-native';
-
+import { SafeAreaView, StyleSheet, Text, View, Pressable, Modal } from 'react-native';
 
 import Burger from './Utilities/Burger';
 import { Prompt } from './Utilities/Prompt';
 import TimerPicker from './Utilities/TimerPicker';
+import { db } from '../misc/firebase';
+import { useAuth } from '../Contexts/AuthContext';
 
 const Timer = ({ navigation }) => {
 
@@ -14,6 +15,10 @@ const Timer = ({ navigation }) => {
 
     // const minutes = [...Array(121).keys()].slice(10);
     const minutes = [...Array(121).keys()];
+
+    const [newInterval, setNewInterval] = useState();
+
+    const currentUserId = useAuth().currentUser.uid;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -42,7 +47,33 @@ const Timer = ({ navigation }) => {
                 <Text>1 Box</Text>
             </View>
             <View style={[styles.centeredView, {flex: 3}]}>
-                <TimerPicker data={minutes}/>
+                <TimerPicker 
+                    data={minutes} 
+                    onStart={() => {
+                        return new Promise((resolve, reject) => {
+                            db.collection('Intervals').add({
+                                uid: currentUserId,
+                                start: new Date(),
+                                taskName,
+                                category
+                            }).then(x => {
+                                setNewInterval(x._delegate._key.path.segments[1]);
+                                resolve();
+                            }).catch(err => reject(`Error: ${err}`));
+                        });
+                    }}
+                    onEnd={() => {
+                        return new Promise((resolve, reject) => {
+                            db.collection('Intervals')
+                            .doc(newInterval)
+                            .update({
+                                end: new Date()
+                            }).then(() => {
+                                resolve();
+                            }).catch(err => reject(`Error: ${err}`));
+                        });
+                    }}
+                />
             </View>
 
         </SafeAreaView>

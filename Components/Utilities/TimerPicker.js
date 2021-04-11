@@ -1,9 +1,7 @@
-import React from 'react';
-import { useEffect } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native'
+import React, { useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View, Button, Vibration } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { min } from 'react-native-reanimated';
-import { useState } from 'react/cjs/react.development';
 
 import { pad } from './misc';
 
@@ -28,22 +26,25 @@ const TimePicker = props => {
 
     const [start, setStart] = useState();
 
+
     useEffect(() => {
         if (!start) return;
         
         if(time === 0){
-            setTime(0);
-            setMinute(10);
-            setSecond(0);
-            setStart(false);
-
+            props.onEnd().then(() => {
+                setTime(0);
+                setMinute(10);
+                setSecond(0);
+                setStart(false);
+                
+                Vibration.vibrate(3000);
+            }).catch(err => console.log(err));
             return;
         }
 
         setTimeout(() => {
             setTime(minute * 60 + second - 1);
             console.log(`time: ${time} -- second: ${second} -- minute: ${minute}`);
-
 
             if(second === 0){
                 setSecond(59);
@@ -82,7 +83,18 @@ const TimePicker = props => {
             :
             <View style={{marginTop: 5}}>
                 <Text style={{width: 0.2 * width, textAlign: 'center', fontSize: 30}} onPress={() => setShowPicker(!showPicker)}>{pad(minute)}:{pad(second)}</Text>
-                <Button title="Start" onPress={() => {setTime(minute * 60 + second); setStart(!start);}} />
+                <Button 
+                    title="Start" 
+                    onPress={() => {
+                        props.onStart().then(() => {
+                            setTime(minute * 60 + second); 
+                            setStart(true);
+                        }).catch(err => console.log(err));
+                    }}
+                    disabled={start}
+                />
+
+                {/* <Button title="test pause" onPress={() => setStart(false)} /> */}
             </View>
     );
 };
