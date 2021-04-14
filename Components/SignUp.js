@@ -4,6 +4,7 @@ import { useState } from 'react/cjs/react.development';
 
 import { Prompt, PasswordPrompt } from './Utilities/Prompt';
 import { useAuth } from '../Contexts/AuthContext';
+import { db } from '../misc/firebase';
 
 const SignUp = props => {
     
@@ -23,9 +24,16 @@ const SignUp = props => {
 
         try {
             setError('');            
-            await signup(email,password);
-        }catch {
-            setError('Failed to sign up');
+            const { user } = await signup(email,password); // add email to firebase's authentication
+            
+            // Store the user to firestore so we can add more data
+            db.collection('Users').doc(user.uid).set({
+                email: user.email,
+                categories: []
+            });
+        }catch (err){
+            setError(err.message);
+            return;
         }
     };
     

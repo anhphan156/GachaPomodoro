@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Pressable, Modal } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Pressable, Modal, Button } from 'react-native';
 
 import Burger from './Utilities/Burger';
 import { Prompt } from './Utilities/Prompt';
 import TimerPicker from './Utilities/TimerPicker';
 import { db } from '../misc/firebase';
 import { useAuth } from '../Contexts/AuthContext';
+import { FlatList } from 'react-native-gesture-handler';
+
+import firebase from 'firebase/app'; // to get the arrayUnion function
+
+// Get all the frequently used categories of current user
+const getCurrentUserCategories = async function(currentUserId){
+    const result = await db.collection('Users').doc(currentUserId).get();
+
+    return result.data().categories;
+};
 
 const Timer = ({ navigation }) => {
 
@@ -13,10 +23,14 @@ const Timer = ({ navigation }) => {
     const [category, setCategory] = useState('Category');
     const [taskName, setTaskName] = useState('');
 
-    // const minutes = [...Array(121).keys()].slice(10);
-    const minutes = [...Array(121).keys()];
+    // const minutes = [...Array(121).keys()].slice(10); // to render a list of minutes
+    const minutes = [...Array(121).keys()]; 
 
-    const [newInterval, setNewInterval] = useState();
+    const [duration, setDuration] = useState(); // to store the duration that user clicked
+
+    const [newInterval, setNewInterval] = useState(); // id of interval object from firestore
+
+    const [currentUserCategories, setCurrentUserCategories] = useState();
 
     const currentUserId = useAuth().currentUser.uid;
 
@@ -25,6 +39,7 @@ const Timer = ({ navigation }) => {
             <View style={{flex:1}}>
                 <Burger navigation={navigation} />
             </View>
+            {/* Asking for TaskName, and Category */}
             <View style={[styles.taskName, {flex: 1}]}>
                 <Prompt placeholder="Pick a Task" onChangeText={x => setTaskName(x)} />
                 <Modal 
@@ -34,26 +49,54 @@ const Timer = ({ navigation }) => {
                     onRequestClose={() => setModalVisible(!modalVisible)}
                 >
                     <View style={styles.centeredView}>
-                        <Text onPress={() => { setCategory('Study'); setModalVisible(!modalVisible); }}>Study</Text>
-                        <Text onPress={() => { setCategory('Working'); setModalVisible(!modalVisible); }}>Working</Text>
+                        <View style={{flex:3}}>
+                            <FlatList 
+                                data={currentUserCategories} 
+                                renderItem={({item}) => <Text onPress={() => {setCategory(item); setModalVisible(false)}} style={{fontSize: 30, borderBottomWidth: 1}}>{item}</Text>}
+                            />
+                        </View>
+                        {/* Add a new category to firestore */}
+                        <View style={{flex:1}}>
+                            <Prompt placeholder="Add a New Category" onChangeText={x => {setCategory(x); }} />
+                            <Button 
+                                title="Select"
+                                onPress={() => {
+                                    db.collection('Users')
+                                    .doc(currentUserId)
+                                    .update({
+                                        categories: firebase.firestore.FieldValue.arrayUnion(category)
+                                    }).then(() => setModalVisible(false));
+                                }}
+                            />
+                        </View>
                     </View>
                 </Modal>
-                <Pressable style={[styles.roundedButton, {marginTop: 10}]} onPress={() => setModalVisible(!modalVisible)}>
+                <Pressable 
+                    style={[styles.roundedButton, {marginTop: 10}]} 
+                    onPress={() => {
+                        setModalVisible(!modalVisible);
+                        getCurrentUserCategories(currentUserId).then(x => setCurrentUserCategories(x));
+                    }}
+                >
                     <Text style={category === 'Category' ? {color: 'grey'} : {color: 'black'}}>{category}</Text>
                 </Pressable>
             </View>
+            {/* Showing rewards */}
             <View style={[styles.centeredView, {flex: 2}]}>
                 <Text>10 Experience Books</Text>
                 <Text>1 Box</Text>
             </View>
+            {/* Showing Time picker */}
             <View style={[styles.centeredView, {flex: 3}]}>
                 <TimerPicker 
                     data={minutes} 
+                    setDuration={setDuration}
                     onStart={() => {
                         return new Promise((resolve, reject) => {
                             db.collection('Intervals').add({
                                 uid: currentUserId,
                                 start: new Date(),
+                                duration,
                                 taskName,
                                 category
                             }).then(x => {

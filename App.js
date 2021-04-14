@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import Timer from './Components/Timer';
@@ -8,6 +8,7 @@ import Gacha from './Components/Gacha';
 import Profile from './Components/Profile';
 import SignUp from './Components/SignUp';
 import SignIn from './Components/SignIn';
+import Report from './Components/Report';
 
 import { AuthProvider, useAuth } from './Contexts/AuthContext';
 
@@ -22,6 +23,7 @@ const Home = () => {
       <Drawer.Navigator initialRouteName="Timer">
         <Drawer.Screen name="Timer" component={Timer} />
         <Drawer.Screen name="Gacha" component={Gacha} />
+        <Drawer.Screen name="Report" component={Report} />
         <Drawer.Screen name="Profile" component={Profile} />
       </Drawer.Navigator>
     </NavigationContainer>

@@ -20,9 +20,9 @@ const TimePicker = props => {
     const scrollY = React.useRef(new Animated.Value(0)).current;
     
     const [showPicker, setShowPicker] = useState(true);
-    const [minute, setMinute] = useState(10);
-    const [second, setSecond] = useState(0);
-    const [time, setTime] = useState(0);
+    const [minute, setMinute] = useState(10); // The minute number that the user picked
+    const [second, setSecond] = useState(0); // to render on the view
+    const [time, setTime] = useState(0); // Duration in seconds, for the clock to tick
 
     const [start, setStart] = useState();
 
@@ -71,7 +71,7 @@ const TimePicker = props => {
 
                         return (
                             <Animated.View style={{transform: [{scale}]}}>
-                                <TouchableOpacity onPress={() => {setMinute(item); setShowPicker(!showPicker)}}>
+                                <TouchableOpacity onPress={() => {setMinute(item); props.setDuration(item); setShowPicker(!showPicker)}}>
                                     <Text style={{width: 0.15 * width, textAlign: 'center', fontSize: 30}}>{item} </Text>
                                 </TouchableOpacity>
                             </Animated.View>
