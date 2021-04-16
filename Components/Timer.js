@@ -95,7 +95,8 @@ const Timer = ({ navigation }) => {
                         return new Promise((resolve, reject) => {
                             db.collection('Intervals').add({
                                 uid: currentUserId,
-                                start: new Date(),
+                                start: new Date().toTimeString(),
+                                date: new Date().toDateString(),
                                 duration,
                                 taskName,
                                 category
@@ -110,7 +111,7 @@ const Timer = ({ navigation }) => {
                             db.collection('Intervals')
                             .doc(newInterval)
                             .update({
-                                end: new Date()
+                                end: new Date().toTimeString()
                             }).then(() => {
                                 resolve();
                             }).catch(err => reject(`Error: ${err}`));
