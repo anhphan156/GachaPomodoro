@@ -4,7 +4,7 @@ import { SafeAreaView, StyleSheet, Text, View, Pressable, Modal, Button } from '
 import Burger from './Utilities/Burger';
 import { Prompt } from './Utilities/Prompt';
 import TimerPicker from './Utilities/TimerPicker';
-import { db } from '../misc/firebase';
+import { db, rtdb } from '../misc/firebase';
 import { useAuth } from '../Contexts/AuthContext';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -17,11 +17,24 @@ const getCurrentUserCategories = async function(currentUserId){
     return result.data().categories;
 };
 
-const Timer = ({ navigation }) => {
+const getItemRate = multiplier => setItemRate => {
+    rtdb.ref('/ItemRate').on('value', snapshot => {
+        const data = snapshot.val();
 
+        setItemRate({book: multiplier(data.book), gold: multiplier(data.gold), box: multiplier(data.box)});
+    });
+};
+
+// int => {item, rate, amount} => {item, amount}
+const rewardMultiplier = minute => reward => ({item: reward.item, amount: Math.round((minute / reward.rate) * reward.amount)});
+
+const Timer = ({ navigation }) => {
+    
     const [modalVisible, setModalVisible] = useState(false);
     const [category, setCategory] = useState('Category');
     const [taskName, setTaskName] = useState('');
+
+    const [itemRate, setItemRate] = useState();
 
     // const minutes = [...Array(121).keys()].slice(10); // to render a list of minutes
     const minutes = [...Array(121).keys()]; 
@@ -61,7 +74,7 @@ const Timer = ({ navigation }) => {
                             <Button 
                                 title="Select"
                                 onPress={() => {
-                                    db.collection('Users')
+                                    db.collection('Users') // Query the users and add the new category
                                     .doc(currentUserId)
                                     .update({
                                         categories: firebase.firestore.FieldValue.arrayUnion(category)
@@ -83,14 +96,21 @@ const Timer = ({ navigation }) => {
             </View>
             {/* Showing rewards */}
             <View style={[styles.centeredView, {flex: 2}]}>
-                <Text>10 Experience Books</Text>
-                <Text>1 Box</Text>
+                <Text>{itemRate? itemRate.book.amount : 0} Experience Books</Text>
+                <Text>{itemRate? itemRate.gold.amount : 0} Golds</Text>
+                <Text>{itemRate? itemRate.box.amount : 0} Boxes</Text>
             </View>
             {/* Showing Time picker */}
             <View style={[styles.centeredView, {flex: 3}]}>
                 <TimerPicker 
                     data={minutes} 
-                    setDuration={setDuration}
+                    onChange={duration => {
+                        setDuration(duration); // set the duration to the number user selected
+                        const rewardMultiplierByDuration = rewardMultiplier(duration); // make a reward multiplier by the duration
+
+                        getItemRate(rewardMultiplierByDuration)(setItemRate); // get item rate from realtime db and multiply
+
+                    }}
                     onStart={() => {
                         return new Promise((resolve, reject) => {
                             db.collection('Intervals').add({
@@ -108,12 +128,20 @@ const Timer = ({ navigation }) => {
                     }}
                     onEnd={() => {
                         return new Promise((resolve, reject) => {
-                            db.collection('Intervals')
+                            db.collection('Intervals') // On ending, add the end time to the interval
                             .doc(newInterval)
                             .update({
                                 end: new Date().toTimeString()
                             }).then(() => {
-                                resolve();
+                                db.collection('Users') // Then update the reward to the user
+                                .doc(currentUserId)
+                                .update({
+                                    'item.book.amount': firebase.firestore.FieldValue.increment(itemRate.book.amount),
+                                    'item.gold.amount': firebase.firestore.FieldValue.increment(itemRate.gold.amount),
+                                    'item.box.amount': firebase.firestore.FieldValue.increment(itemRate.box.amount)
+                                }).then(() => {
+                                    resolve();
+                                }).catch(err => reject('Error: ' + err));
                             }).catch(err => reject(`Error: ${err}`));
                         });
                     }}

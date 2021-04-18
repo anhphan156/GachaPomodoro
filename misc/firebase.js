@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/database';
 
 import { firebaseConfig } from '../config/firebaseconfig';
 
@@ -10,4 +11,6 @@ const auth = fb.auth();
 
 const db = fb.firestore();
 
-export { auth, db };
+const rtdb = fb.database();
+
+export { auth, db, rtdb };

@@ -34,6 +34,7 @@ const TimePicker = props => {
             props.onEnd().then(() => {
                 setTime(0);
                 setMinute(10);
+                props.onChange(10);
                 setSecond(0);
                 setStart(false);
                 
@@ -71,7 +72,15 @@ const TimePicker = props => {
 
                         return (
                             <Animated.View style={{transform: [{scale}]}}>
-                                <TouchableOpacity onPress={() => {setMinute(item); props.setDuration(item); setShowPicker(!showPicker)}}>
+                                <TouchableOpacity 
+                                    onPress={() => {
+
+                                        props.onChange(item);
+
+                                        setMinute(item); 
+                                        setShowPicker(!showPicker)
+                                    }}
+                                 >
                                     <Text style={{width: 0.15 * width, textAlign: 'center', fontSize: 30}}>{item} </Text>
                                 </TouchableOpacity>
                             </Animated.View>
