@@ -24,7 +24,7 @@ const Report = ({ navigation }) => {
                     ref={scrollViewRef}
                 >
                     <WeeklyReport />
-                    <DailyReport />
+                    <DailyReport navigation={navigation}/>
                 </ScrollView>
             </View>
             <View style={{flex:1, marginHorizontal: 0.35 * width}}>

@@ -20,17 +20,21 @@ const DailyReport = props => {
     const [todayData, setTodayData] = useState();
 
     useEffect(() => {
-        getTodayData().then(x => {
+        const unsubscribe = props.navigation.addListener('focus', () => {
+            getTodayData().then(x => {
 
-            // Firestore Obj => {"category": "duration"} by reduce => [{"x": "category", "y": "duration"}] by Object entries and map
-            setTodayData(Object.entries(x.reduce((acc, x) => {
-                return acc[x.category]?
-                    {...acc, [x.category]: acc[x.category] + parseInt(x.duration)} :
-                    {...acc, [x.category]: parseInt(x.duration)};
-            }, {})).map(x => ({x: x[0], y: x[1]})));
+                // Firestore Obj => {"category": "duration"} by reduce => [{"x": "category", "y": "duration"}] by Object entries and map
+                setTodayData(Object.entries(x.reduce((acc, x) => {
+                    return acc[x.category]?
+                        {...acc, [x.category]: acc[x.category] + parseInt(x.duration)} :
+                        {...acc, [x.category]: parseInt(x.duration)};
+                }, {})).map(x => ({x: x[0], y: x[1]})));
 
+            });
         });
-    }, []);
+
+        return unsubscribe;
+    }, [props.navigation]);
 
     return (
         <View style={styles.container}>
