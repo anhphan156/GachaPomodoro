@@ -9,6 +9,7 @@ import Profile from './Components/Profile';
 import SignUp from './Components/SignUp';
 import SignIn from './Components/SignIn';
 import Report from './Components/Report';
+import Character from './Components/Character';
 
 import { AuthProvider, useAuth } from './Contexts/AuthContext';
 
@@ -23,6 +24,7 @@ const Home = () => {
       <Drawer.Navigator initialRouteName="Timer">
         <Drawer.Screen name="Timer" component={Timer} />
         <Drawer.Screen name="Gacha" component={Gacha} />
+        <Drawer.Screen name="Character" component={Character} />
         <Drawer.Screen name="Report" component={Report} />
         <Drawer.Screen name="Profile" component={Profile} />
       </Drawer.Navigator>
