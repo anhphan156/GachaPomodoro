@@ -7,20 +7,8 @@ import { db } from '../misc/firebase';
 import { useAuth } from '../Contexts/AuthContext';
 
 import ItemShow from './ItemShow';
-
+import { getCurrentUser, getCharacters } from '../misc/DA';
 import firebase from 'firebase/app'; // to get the arrayUnion function
-
-const getCharacters = async () => {
-    const querySnapShot = await db.collection('Characters').get();
-
-    return querySnapShot.docs.map(x => x.data());
-};
-
-const getCurrentUser = async currentUserId => {
-    const querySnapShot = await db.collection('Users').doc(currentUserId).get();
-
-    return querySnapShot.data();
-};
 
 const getRandomItem = async () => {
     const n = Math.floor(Math.random() * 100);

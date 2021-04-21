@@ -9,12 +9,11 @@ import { useAuth } from '../Contexts/AuthContext';
 import { FlatList } from 'react-native-gesture-handler';
 
 import firebase from 'firebase/app'; // to get the arrayUnion function
+import { getCurrentUser } from '../misc/DA';
 
 // Get all the frequently used categories of current user
 const getCurrentUserCategories = async function(currentUserId){
-    const result = await db.collection('Users').doc(currentUserId).get();
-
-    return result.data().categories;
+    return (await getCurrentUser(currentUserId)).categories;
 };
 
 const getItemRate = multiplier => setItemRate => {

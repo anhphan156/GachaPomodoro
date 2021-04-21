@@ -28,8 +28,7 @@ const DailyReport = props => {
                     return acc[x.category]?
                         {...acc, [x.category]: acc[x.category] + parseInt(x.duration)} :
                         {...acc, [x.category]: parseInt(x.duration)};
-                }, {})).map(x => ({x: x[0], y: x[1]})));
-
+                }, {})).map(x => ({x: `${x[1]} mins ${x[0]}`, y: x[1]})));
             });
         });
 
@@ -44,14 +43,14 @@ const DailyReport = props => {
                     standalone={false}
                     width={400} height={400}
                     data={todayData}
-                    innerRadius={68} labelRadius={100}
+                    innerRadius={68} labelRadius={100} radius={200}
                     style={{ labels: { fontSize: 20, fill: "white" } }}
                 />
                 <VictoryLabel
                     textAnchor="middle"
                     style={{ fontSize: 20 }}
                     x={200} y={200}
-                    text="Pie!"
+                    text={!todayData || todayData.length === 0? "No Data Today": todayData.reduce((acc,x) => acc + x.y,0) + ' mins'}
                 />
             </Svg>
         </View>
