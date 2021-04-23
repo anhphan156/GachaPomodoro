@@ -45,7 +45,7 @@ const TimePicker = props => {
 
         setTimeout(() => {
             setTime(minute * 60 + second - 1);
-            console.log(`time: ${time} -- second: ${second} -- minute: ${minute}`);
+            // console.log(`time: ${time} -- second: ${second} -- minute: ${minute}`);
 
             if(second === 0){
                 setSecond(59);

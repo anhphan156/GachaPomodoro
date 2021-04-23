@@ -102,6 +102,8 @@ const Character = ({navigation}) => {
                                                 onAscend(currentUserId, requiredGold, requiredBook, x.name);
                                                 setCurrentUserGold(currentUserGold - requiredGold);
                                                 setCurrentUserBook(currentUserBook - requiredBook);
+
+                                                x.level += 1;
                                             }}
                                         />
                                     </View>
